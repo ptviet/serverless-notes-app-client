@@ -7,31 +7,33 @@ import NewNote from './containers/NewNote';
 import Note from './containers/Note';
 import NotFound from './containers/NotFound';
 import AppliedRoute from './components/AppliedRoute';
+import UnauthenticatedRoute from './components/UnauthenticatedRoute';
+import AuthenticatedRoute from './components/AuthenticatedRoute';
 
 export default ({ childProps }) => {
   return (
     <div>
       <Switch>
         <AppliedRoute path="/" exact component={Home} props={childProps} />
-        <AppliedRoute
+        <UnauthenticatedRoute
           path="/login"
           exact
           component={Login}
           props={childProps}
         />
-        <AppliedRoute
+        <UnauthenticatedRoute
           path="/register"
           exact
           component={Register}
           props={childProps}
         />
-        <AppliedRoute
+        <AuthenticatedRoute
           path="/notes/new"
           exact
           component={NewNote}
           props={childProps}
         />
-        <AppliedRoute
+        <AuthenticatedRoute
           path="/notes/:id"
           exact
           component={Note}
