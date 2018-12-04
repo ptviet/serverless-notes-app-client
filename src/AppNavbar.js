@@ -16,7 +16,12 @@ class AppNavbar extends Component {
         <Navbar.Collapse>
           <Nav pullRight>
             {this.props.isAuthenticated ? (
-              <NavItem onClick={this.props.handleLogout}>Logout</NavItem>
+              <Fragment>
+                <LinkContainer to="/notes/new">
+                  <NavItem>New Note</NavItem>
+                </LinkContainer>
+                <NavItem onClick={this.props.handleLogout}>Logout</NavItem>
+              </Fragment>
             ) : (
               <Fragment>
                 <LinkContainer to="/register">

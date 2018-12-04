@@ -5,6 +5,7 @@ import {
   FormControl,
   ControlLabel
 } from 'react-bootstrap';
+import { Auth } from 'aws-amplify';
 import './Register.css';
 import LoaderButton from '../components/LoaderButton';
 
@@ -37,13 +38,52 @@ export default class Register extends Component {
   onSubmit = async event => {
     event.preventDefault();
     this.setState({ isLoading: true });
-    this.setState({ newUser: 'test' });
+
+    try {
+      const newUser = await Auth.signUp({
+        username: this.state.email,
+        password: this.state.password
+      });
+      this.setState({ newUser });
+    } catch (error) {
+      if (error.code === 'UsernameExistsException') {
+        try {
+          await Auth.resendSignUp(this.state.email);
+          this.setState({
+            newUser: {
+              username: this.state.email,
+              password: this.state.password
+            }
+          });
+        } catch (error) {
+          if (error.message === 'User is already confirmed.') {
+            this.props.history.push('/login');
+          }
+        }
+      }
+    }
+
     this.setState({ isLoading: false });
   };
 
   onConfirmationSubmit = async event => {
     event.preventDefault();
     this.setState({ isLoading: true });
+
+    try {
+      await Auth.confirmSignUp(this.state.email, this.state.confirmationCode);
+      await Auth.signIn(this.state.email, this.state.password);
+      this.props.userHasAuthenticated(true);
+      this.props.history.push('/');
+    } catch (error) {
+      console.log(error);
+      if (error.message === 'Incorrect username or password.') {
+        alert(
+          'Please login with the password you used when you signed up the first time, or sign up again with another email.'
+        );
+      }
+      this.setState({ isLoading: false });
+    }
   };
 
   renderConfirmationForm() {
